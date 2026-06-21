@@ -122,7 +122,7 @@ function main() {
     // 1. Advance the angle over time
     let rotationSpeed = parseFloat(
       window
-        .getComputedStyle(document.querySelector("#div-1"))
+        .getComputedStyle(document.querySelector("#c"))
         .getPropertyValue("--rotationSpeed") || 0.01,
     );
     //

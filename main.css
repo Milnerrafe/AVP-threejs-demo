@@ -1,6 +1,23 @@
+@property --rotationSpeed {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0.02;
+}
+
 #c {
+    transition:
+        --rotationSpeed 0.5s ease-in-out,
+        height 0.5s ease-in-out,
+        width 0.5s ease-in-out;
+    --rotationSpeed: 0.02;
     height: 90px;
     width: 90px;
+}
+
+#c:hover {
+    --rotationSpeed: 0.001;
+    height: 100px;
+    width: 100px;
 }
 
 body {
@@ -8,7 +25,6 @@ body {
 }
 
 #div-1 {
-    --rotationSpeed: 0.02;
     padding: 10px;
     display: flex;
     flex-direction: row;

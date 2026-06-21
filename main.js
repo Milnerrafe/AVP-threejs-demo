@@ -77,6 +77,7 @@ function main() {
     const gltfLoader = new GLTFLoader();
     gltfLoader.load("/scene.gltf", (gltf) => {
       const root = gltf.scene;
+      root.name = "AVP";
 
       scene.add(root);
 
@@ -138,6 +139,49 @@ function main() {
     camera.lookAt(targetPoint);
 
     renderer.render(scene, camera);
+
+    const texture = window
+      .getComputedStyle(document.querySelector("#c"))
+      .getPropertyValue("--texture");
+
+    if (texture == "gold") {
+      const filterMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffd700, // Base gold color
+        metalness: 0.9, // Highly metallic surface
+        roughness: 0.15, // Slightly blurry reflections (smooth but realistic)
+        bumpScale: 0.05, // Depth of the texture pattern
+      });
+
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = 128;
+      const ctx = canvas.getContext("2d");
+      for (let i = 0; i < 5000; i++) {
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.15})`;
+        ctx.fillRect(Math.random() * 128, Math.random() * 128, 1, 1);
+      }
+
+      const noiseTexture = new THREE.CanvasTexture(canvas);
+      noiseTexture.wrapS = THREE.RepeatWrapping;
+      noiseTexture.wrapT = THREE.RepeatWrapping;
+      noiseTexture.repeat.set(10, 10); // Tile it to make it microscopic
+
+      // Assign textures to the material
+      filterMaterial.bumpMap = noiseTexture;
+      filterMaterial.roughnessMap = noiseTexture; // Variance in shininess
+
+      function disposeMaterial(mat) {
+        if (mat.map) mat.map.dispose();
+        if (mat.normalMap) mat.normalMap.dispose();
+        if (mat.roughnessMap) mat.roughnessMap.dispose();
+        if (mat.metalnessMap) mat.metalnessMap.dispose();
+        if (mat.aoMap) mat.aoMap.dispose();
+        mat.dispose();
+      }
+
+      scene.overrideMaterial = filterMaterial;
+    } else {
+      scene.overrideMaterial = null;
+    }
 
     requestAnimationFrame(render);
   }

@@ -29,6 +29,17 @@ function main() {
     const groundColor = 0xb97a20; // brownish orange
     const intensity = 2;
     const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+    light.name = "normal-light";
+    scene.add(light);
+  }
+
+  {
+    const skyColor = 0x0000ee;
+    const groundColor = 0x0000ee;
+    const intensity = 3;
+    const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
+    light.name = "blue-light";
+    light.visible = false;
     scene.add(light);
   }
 
@@ -37,15 +48,6 @@ function main() {
     const intensity = 2.5;
     const light = new THREE.DirectionalLight(color, intensity);
     light.position.set(5, 10, 2);
-    scene.add(light);
-    scene.add(light.target);
-  }
-
-  {
-    const color = 0xffffff;
-    const intensity = 2.5;
-    const light = new THREE.DirectionalLight(color, intensity);
-    light.position.set(0, 0, -2);
     scene.add(light);
     scene.add(light.target);
   }
@@ -146,41 +148,17 @@ function main() {
 
     if (texture == "gold") {
       const filterMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffd700, // Base gold color
-        metalness: 0.9, // Highly metallic surface
-        roughness: 0.15, // Slightly blurry reflections (smooth but realistic)
-        bumpScale: 0.05, // Depth of the texture pattern
+        color: 0xffffff,
       });
-
-      const canvas = document.createElement("canvas");
-      canvas.width = canvas.height = 128;
-      const ctx = canvas.getContext("2d");
-      for (let i = 0; i < 5000; i++) {
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.15})`;
-        ctx.fillRect(Math.random() * 128, Math.random() * 128, 1, 1);
-      }
-
-      const noiseTexture = new THREE.CanvasTexture(canvas);
-      noiseTexture.wrapS = THREE.RepeatWrapping;
-      noiseTexture.wrapT = THREE.RepeatWrapping;
-      noiseTexture.repeat.set(10, 10); // Tile it to make it microscopic
-
-      // Assign textures to the material
-      filterMaterial.bumpMap = noiseTexture;
-      filterMaterial.roughnessMap = noiseTexture; // Variance in shininess
-
-      function disposeMaterial(mat) {
-        if (mat.map) mat.map.dispose();
-        if (mat.normalMap) mat.normalMap.dispose();
-        if (mat.roughnessMap) mat.roughnessMap.dispose();
-        if (mat.metalnessMap) mat.metalnessMap.dispose();
-        if (mat.aoMap) mat.aoMap.dispose();
-        mat.dispose();
-      }
+      scene.getObjectByName("normal-light").visible = false;
+      scene.getObjectByName("blue-light").visible = true;
 
       scene.overrideMaterial = filterMaterial;
     } else {
       scene.overrideMaterial = null;
+
+      scene.getObjectByName("normal-light").visible = true;
+      scene.getObjectByName("blue-light").visible = false;
     }
 
     requestAnimationFrame(render);

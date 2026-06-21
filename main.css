@@ -1,0 +1,61 @@
+#c {
+    height: 90px;
+    width: 90px;
+}
+
+body {
+    margin: 0;
+}
+
+#div-1 {
+    --rotationSpeed: 0.02;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    align-items: center;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Oxygen,
+        Ubuntu,
+        Cantarell,
+        "Open Sans",
+        "Helvetica Neue",
+        sans-serif;
+
+    background-color: #f0f0f2;
+    color: black;
+    max-height: 120px;
+    transition:
+        opacity 0.2s,
+        display 0.5s allow-discrete;
+}
+
+#div-1.hidden {
+    opacity: 0;
+    display: block;
+}
+
+#div-2 {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#div-3 {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-right: 40px;
+    gap: 20px;
+}
+
+.zero-margin {
+    margin: 0px;
+}

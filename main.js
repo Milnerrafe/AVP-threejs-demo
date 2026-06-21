@@ -78,57 +78,6 @@ function main() {
     gltfLoader.load("/scene.gltf", (gltf) => {
       const root = gltf.scene;
 
-      // 1. Create the smooth, shiny black material
-      const shinyBlackMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffd700, // Base gold color
-        metalness: 0.9, // Highly metallic surface
-        roughness: 0.15, // Slightly blurry reflections (smooth but realistic)
-        bumpScale: 0.05, // Depth of the texture pattern
-      });
-
-      const canvas = document.createElement("canvas");
-      canvas.width = canvas.height = 128;
-      const ctx = canvas.getContext("2d");
-      for (let i = 0; i < 5000; i++) {
-        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.15})`;
-        ctx.fillRect(Math.random() * 128, Math.random() * 128, 1, 1);
-      }
-
-      const noiseTexture = new THREE.CanvasTexture(canvas);
-      noiseTexture.wrapS = THREE.RepeatWrapping;
-      noiseTexture.wrapT = THREE.RepeatWrapping;
-      noiseTexture.repeat.set(10, 10); // Tile it to make it microscopic
-
-      // Assign textures to the material
-      shinyBlackMaterial.bumpMap = noiseTexture;
-      shinyBlackMaterial.roughnessMap = noiseTexture; // Variance in shininess
-
-      function disposeMaterial(mat) {
-        if (mat.map) mat.map.dispose();
-        if (mat.normalMap) mat.normalMap.dispose();
-        if (mat.roughnessMap) mat.roughnessMap.dispose();
-        if (mat.metalnessMap) mat.metalnessMap.dispose();
-        if (mat.aoMap) mat.aoMap.dispose();
-        mat.dispose();
-      }
-
-      // 2. Traverse the model and strip existing textures
-      root.traverse((child) => {
-        if (child.isMesh) {
-          // Safely dispose of old material and its textures to prevent memory leaks
-          if (child.material) {
-            if (Array.isArray(child.material)) {
-              child.material.forEach((mat) => disposeMaterial(mat));
-            } else {
-              disposeMaterial(child.material);
-            }
-          }
-
-          // Apply the global shiny black material
-          child.material = shinyBlackMaterial;
-        }
-      });
-
       scene.add(root);
 
       const box = new THREE.Box3().setFromObject(root);

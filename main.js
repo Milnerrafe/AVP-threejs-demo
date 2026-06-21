@@ -86,6 +86,23 @@ function main() {
         bumpScale: 0.05, // Depth of the texture pattern
       });
 
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = 128;
+      const ctx = canvas.getContext("2d");
+      for (let i = 0; i < 5000; i++) {
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.15})`;
+        ctx.fillRect(Math.random() * 128, Math.random() * 128, 1, 1);
+      }
+
+      const noiseTexture = new THREE.CanvasTexture(canvas);
+      noiseTexture.wrapS = THREE.RepeatWrapping;
+      noiseTexture.wrapT = THREE.RepeatWrapping;
+      noiseTexture.repeat.set(10, 10); // Tile it to make it microscopic
+
+      // Assign textures to the material
+      shinyBlackMaterial.bumpMap = noiseTexture;
+      shinyBlackMaterial.roughnessMap = noiseTexture; // Variance in shininess
+
       function disposeMaterial(mat) {
         if (mat.map) mat.map.dispose();
         if (mat.normalMap) mat.normalMap.dispose();

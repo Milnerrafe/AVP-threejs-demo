@@ -25,9 +25,7 @@
     transition:
         --rotationSpeed 0.5s ease-in-out,
         --transparency2 0.5s ease-in-out,
-        --transparency1 0.5s ease-in-out,
-        height 0.5s ease-in-out,
-        width 0.5s ease-in-out;
+        --transparency1 0.5s ease-in-out;
     --rotationSpeed: 0.02;
     --transparency1: 1;
     --transparency2: 0;
@@ -37,16 +35,14 @@
 
 #c:hover {
     --rotationSpeed: 0.005;
-    height: 100px;
-    width: 100px;
+
     --transparency1: 0;
     --transparency2: 1;
 }
 
 #c:active {
     --rotationSpeed: 0.1;
-    height: 100px;
-    width: 100px;
+
     --transparency1: 0;
     --transparency2: 1;
 }

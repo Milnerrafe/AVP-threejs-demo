@@ -159,9 +159,9 @@ function main() {
     const avp = scene.getObjectByName("AVP");
     if (avp) {
       if (
-        (window
+        window
           .getComputedStyle(document.querySelector("#c"))
-          .getPropertyValue("--transparency1") || 1) < 1
+          .getPropertyValue("--transparency1") < 1
       ) {
         const filterMaterial = new THREE.MeshStandardMaterial({
           color: 0xffffff,

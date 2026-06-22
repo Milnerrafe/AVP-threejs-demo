@@ -16,11 +16,6 @@
     initial-value: 0;
 }
 
-@property --texture {
-    syntax: "<string>";
-    initial-value: "";
-}
-
 #c {
     transition:
         --rotationSpeed 0.5s ease-in-out,

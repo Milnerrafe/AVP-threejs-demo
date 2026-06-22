@@ -78,46 +78,7 @@ function main() {
     const gltfLoader = new GLTFLoader();
     gltfLoader.load("/scene.gltf", (gltf) => {
       const root = gltf.scene;
-      root.name = "AVP1";
-
-      scene.add(root);
-
-      const box = new THREE.Box3().setFromObject(root);
-
-      const boxSize = box.getSize(new THREE.Vector3()).length();
-      const boxCenter = box.getCenter(new THREE.Vector3());
-
-      // Set the camera to frame the box
-      frameArea(boxSize * 1, boxSize, boxCenter, camera);
-
-      // Capture the center point of the 3D model for our custom rotation center
-      targetPoint.copy(boxCenter);
-    });
-  }
-
-  {
-    const gltfLoader = new GLTFLoader();
-    gltfLoader.load("/scene.gltf", (gltf) => {
-      const root = gltf.scene;
-
-      const whiteMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-      });
-
-      root.traverse((child) => {
-        if (child.isMesh) {
-          if (child.material) {
-            if (Array.isArray(child.material)) {
-              child.material.forEach((mat) => mat.dispose());
-            } else {
-              child.material.dispose();
-            }
-          }
-          child.material = whiteMaterial;
-        }
-      });
-
-      root.name = "AVP2";
+      root.name = "AVP";
 
       scene.add(root);
 
@@ -195,50 +156,20 @@ function main() {
           .getPropertyValue("--transparency2") || 0,
       ) * 3;
 
-    const avp1 = scene.getObjectByName("AVP1");
-    if (avp1) {
+    const avp = scene.getObjectByName("AVP");
+    if (avp) {
       if (
         (window
           .getComputedStyle(document.querySelector("#c"))
-          .getPropertyValue("--transparency1") || 1) == 0
+          .getPropertyValue("--transparency1") || 1) < 1
       ) {
-        avp1.visible = false;
+        const filterMaterial = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+        });
+        scene.overrideMaterial = filterMaterial;
       } else {
-        avp1.visible = true;
+        scene.overrideMaterial = null;
       }
-      avp1.traverse((node) => {
-        if (node.isMesh) {
-          node.material.transparent = true;
-          node.material.opacity = parseFloat(
-            window
-              .getComputedStyle(document.querySelector("#c"))
-              .getPropertyValue("--transparency1") || 1,
-          );
-        }
-      });
-    }
-
-    const avp2 = scene.getObjectByName("AVP2");
-    if (avp2) {
-      if (
-        (window
-          .getComputedStyle(document.querySelector("#c"))
-          .getPropertyValue("--transparency2") || 1) == 0
-      ) {
-        avp2.visible = false;
-      } else {
-        avp2.visible = true;
-      }
-      avp2.traverse((node) => {
-        if (node.isMesh) {
-          node.material.transparent = true;
-          node.material.opacity = parseFloat(
-            window
-              .getComputedStyle(document.querySelector("#c"))
-              .getPropertyValue("--transparency2") || 0,
-          );
-        }
-      });
     }
 
     requestAnimationFrame(render);

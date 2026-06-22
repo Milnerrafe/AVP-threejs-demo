@@ -1,0 +1,1 @@
+- add fading based on CSS animations, powered by two modules and changing opacity

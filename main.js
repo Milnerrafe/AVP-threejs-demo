@@ -1,6 +1,28 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
+function cssToNumericHex(cssColor) {
+  // 1. Create a temporary element to let the browser normalize the color
+  const dummy = document.createElement("div");
+  dummy.style.color = cssColor;
+  document.body.appendChild(dummy);
+
+  // 2. Extract the computed "rgb(r, g, b)" string
+  const computedColor = window.getComputedStyle(dummy).color;
+  document.body.removeChild(dummy); // Clean up DOM
+
+  // 3. Extract the digits
+  const match = computedColor.match(/\d+/g);
+  if (!match) return 0; // Fallback for invalid colors
+
+  const r = parseInt(match[0], 10);
+  const g = parseInt(match[1], 10);
+  const b = parseInt(match[2], 10);
+
+  // 4. Combine channels using bit shifting to return a true integer
+  return (r << 16) + (g << 8) + b;
+}
+
 function main() {
   const canvas = document.querySelector("#c");
   const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
@@ -34,11 +56,11 @@ function main() {
   }
 
   {
-    const skyColor = 0x0000ee;
-    const groundColor = 0x0000ee;
+    const skyColor = 0xffffff;
+    const groundColor = 0xffffff;
     const intensity = 3;
     const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
-    light.name = "blue-light";
+    light.name = "high-light";
     light.visible = false;
     scene.add(light);
   }
@@ -79,7 +101,34 @@ function main() {
     const gltfLoader = new GLTFLoader();
     gltfLoader.load("/scene.gltf", (gltf) => {
       const root = gltf.scene;
-      root.name = "AVP";
+      root.name = "AVP1";
+
+      scene.add(root);
+
+      const box = new THREE.Box3().setFromObject(root);
+
+      const boxSize = box.getSize(new THREE.Vector3()).length();
+      const boxCenter = box.getCenter(new THREE.Vector3());
+
+      // Set the camera to frame the box
+      frameArea(boxSize * 1, boxSize, boxCenter, camera);
+
+      // Capture the center point of the 3D model for our custom rotation center
+      targetPoint.copy(boxCenter);
+    });
+  }
+
+  {
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.load("/scene.gltf", (gltf) => {
+      const root = gltf.scene;
+
+      const filterMaterial = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+      });
+      root.overrideMaterial = filterMaterial;
+
+      root.name = "AVP2";
 
       scene.add(root);
 
@@ -129,6 +178,8 @@ function main() {
         .getPropertyValue("--rotationSpeed") || 0.01,
     );
     //
+    //
+    //
 
     angle += rotationSpeed;
 
@@ -146,19 +197,48 @@ function main() {
       .getComputedStyle(document.querySelector("#c"))
       .getPropertyValue("--texture");
 
-    if (texture == "gold") {
-      const filterMaterial = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
+    scene.getObjectByName("high-light").groundColor = cssToNumericHex(texture);
+    scene.getObjectByName("high-light").Color = cssToNumericHex(texture);
+
+    scene.getObjectByName("normal-light").intensity =
+      parseFloat(
+        window
+          .getComputedStyle(document.querySelector("#c"))
+          .getPropertyValue("--transparency1") || 1,
+      ) * 2;
+    scene.getObjectByName("high-light").intensity =
+      parseFloat(
+        window
+          .getComputedStyle(document.querySelector("#c"))
+          .getPropertyValue("--transparency2") || 0,
+      ) * 3;
+
+    const avp1 = scene.getObjectByName("AVP1");
+    if (avp1) {
+      avp1.traverse((node) => {
+        if (node.isMesh) {
+          node.material.transparent = true;
+          node.material.opacity = parseFloat(
+            window
+              .getComputedStyle(document.querySelector("#c"))
+              .getPropertyValue("--transparency1") || 1,
+          );
+        }
       });
-      scene.getObjectByName("normal-light").visible = false;
-      scene.getObjectByName("blue-light").visible = true;
+    }
 
-      scene.overrideMaterial = filterMaterial;
-    } else {
-      scene.overrideMaterial = null;
-
-      scene.getObjectByName("normal-light").visible = true;
-      scene.getObjectByName("blue-light").visible = false;
+    const avp2 = scene.getObjectByName("AVP2");
+    if (avp2) {
+      avp2.traverse((node) => {
+        if (node.isMesh) {
+          node.material.transparent = true;
+          node.material.opacity = parseFloat(
+            window
+              .getComputedStyle(document.querySelector("#c"))
+              .getPropertyValue("--transparency2") || 0,
+          );
+        }
+      });
     }
 
     requestAnimationFrame(render);

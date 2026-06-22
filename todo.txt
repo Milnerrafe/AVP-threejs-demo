@@ -1,1 +1,1 @@
-- add fading based on CSS animations, powered by two modules and changing opacity
+- add fading based on CSS animations, powered by two models and changing opacity or Adaptively changing lighting.

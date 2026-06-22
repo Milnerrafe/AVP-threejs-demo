@@ -4,6 +4,18 @@
     initial-value: 0.02;
 }
 
+@property --transparency1 {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 1;
+}
+
+@property --transparency2 {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+}
+
 @property --texture {
     syntax: "<string>";
     initial-value: "";
@@ -12,9 +24,14 @@
 #c {
     transition:
         --rotationSpeed 0.5s ease-in-out,
+        --transparency2 0.5s ease-in-out,
+        --transparency1 0.5s ease-in-out,
         height 0.5s ease-in-out,
         width 0.5s ease-in-out;
     --rotationSpeed: 0.02;
+    --transparency1: 1;
+    --transparency2: 0;
+
     height: 90px;
     width: 90px;
 }
@@ -24,6 +41,8 @@
     height: 100px;
     width: 100px;
     --texture: gold;
+    --transparency1: 0;
+    --transparency2: 1;
 }
 
 #c:active {
@@ -31,6 +50,8 @@
     height: 100px;
     width: 100px;
     --texture: gold;
+    --transparency1: 1;
+    --transparency2: 0;
 }
 
 body {

@@ -1,28 +1,6 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-function cssToNumericHex(cssColor) {
-  // 1. Create a temporary element to let the browser normalize the color
-  const dummy = document.createElement("div");
-  dummy.style.color = cssColor;
-  document.body.appendChild(dummy);
-
-  // 2. Extract the computed "rgb(r, g, b)" string
-  const computedColor = window.getComputedStyle(dummy).color;
-  document.body.removeChild(dummy); // Clean up DOM
-
-  // 3. Extract the digits
-  const match = computedColor.match(/\d+/g);
-  if (!match) return 0; // Fallback for invalid colors
-
-  const r = parseInt(match[0], 10);
-  const g = parseInt(match[1], 10);
-  const b = parseInt(match[2], 10);
-
-  // 4. Combine channels using bit shifting to return a true integer
-  return (r << 16) + (g << 8) + b;
-}
-
 function main() {
   const canvas = document.querySelector("#c");
   const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
@@ -56,12 +34,11 @@ function main() {
   }
 
   {
-    const skyColor = 0xffffff;
-    const groundColor = 0xffffff;
+    const skyColor = 0x0000ee;
+    const groundColor = 0x0000ee;
     const intensity = 3;
     const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
     light.name = "high-light";
-    light.visible = false;
     scene.add(light);
   }
 
@@ -123,10 +100,22 @@ function main() {
     gltfLoader.load("/scene.gltf", (gltf) => {
       const root = gltf.scene;
 
-      const filterMaterial = new THREE.MeshStandardMaterial({
+      const whiteMaterial = new THREE.MeshStandardMaterial({
         color: 0xffffff,
       });
-      root.overrideMaterial = filterMaterial;
+
+      root.traverse((child) => {
+        if (child.isMesh) {
+          if (child.material) {
+            if (Array.isArray(child.material)) {
+              child.material.forEach((mat) => mat.dispose());
+            } else {
+              child.material.dispose();
+            }
+          }
+          child.material = whiteMaterial;
+        }
+      });
 
       root.name = "AVP2";
 
@@ -193,13 +182,6 @@ function main() {
 
     renderer.render(scene, camera);
 
-    const texture = window
-      .getComputedStyle(document.querySelector("#c"))
-      .getPropertyValue("--texture");
-
-    scene.getObjectByName("high-light").groundColor = cssToNumericHex(texture);
-    scene.getObjectByName("high-light").Color = cssToNumericHex(texture);
-
     scene.getObjectByName("normal-light").intensity =
       parseFloat(
         window
@@ -215,6 +197,15 @@ function main() {
 
     const avp1 = scene.getObjectByName("AVP1");
     if (avp1) {
+      if (
+        (window
+          .getComputedStyle(document.querySelector("#c"))
+          .getPropertyValue("--transparency1") || 1) == 0
+      ) {
+        avp1.visible = false;
+      } else {
+        avp1.visible = true;
+      }
       avp1.traverse((node) => {
         if (node.isMesh) {
           node.material.transparent = true;
@@ -229,6 +220,15 @@ function main() {
 
     const avp2 = scene.getObjectByName("AVP2");
     if (avp2) {
+      if (
+        (window
+          .getComputedStyle(document.querySelector("#c"))
+          .getPropertyValue("--transparency2") || 1) == 0
+      ) {
+        avp2.visible = false;
+      } else {
+        avp2.visible = true;
+      }
       avp2.traverse((node) => {
         if (node.isMesh) {
           node.material.transparent = true;

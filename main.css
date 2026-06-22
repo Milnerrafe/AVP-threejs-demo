@@ -31,16 +31,14 @@
     --rotationSpeed: 0.02;
     --transparency1: 1;
     --transparency2: 0;
-
     height: 90px;
     width: 90px;
 }
 
 #c:hover {
-    --rotationSpeed: 0.001;
+    --rotationSpeed: 0.005;
     height: 100px;
     width: 100px;
-    --texture: gold;
     --transparency1: 0;
     --transparency2: 1;
 }
@@ -49,9 +47,8 @@
     --rotationSpeed: 0.1;
     height: 100px;
     width: 100px;
-    --texture: gold;
-    --transparency1: 1;
-    --transparency2: 0;
+    --transparency1: 0;
+    --transparency2: 1;
 }
 
 body {

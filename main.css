@@ -21,7 +21,7 @@
         --rotationSpeed 0.5s ease-in-out,
         --transparency2 0.5s ease-in-out,
         --transparency1 0.5s ease-in-out;
-    --rotationSpeed: 0.02;
+    --rotationSpeed: 0.01;
     --transparency1: 1;
     --transparency2: 0;
     height: 90px;
@@ -36,6 +36,32 @@
 }
 
 #c:active {
+    --rotationSpeed: 0.1;
+
+    --transparency1: 0;
+    --transparency2: 1;
+}
+
+#c1 {
+    transition:
+        --rotationSpeed 0.5s ease-in-out,
+        --transparency2 0.5s ease-in-out,
+        --transparency1 0.5s ease-in-out;
+    --rotationSpeed: 0.01;
+    --transparency1: 1;
+    --transparency2: 0;
+    height: 90px;
+    width: 90px;
+}
+
+#c1:hover {
+    --rotationSpeed: 0.005;
+
+    --transparency1: 0;
+    --transparency2: 1;
+}
+
+#c1:active {
     --rotationSpeed: 0.1;
 
     --transparency1: 0;
@@ -65,8 +91,8 @@ body {
         "Helvetica Neue",
         sans-serif;
 
-    background-color: #f0f0f2;
-    color: black;
+    background-color: black;
+    color: white;
     max-height: 120px;
     transition:
         opacity 0.2s,

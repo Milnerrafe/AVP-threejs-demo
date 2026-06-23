@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-function main() {
-  const canvas = document.querySelector("#c");
+function main(querySelector) {
+  const canvas = document.querySelector(querySelector);
   const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 
   const fov = 45;
@@ -36,7 +36,8 @@ function main() {
   {
     const skyColor = 0x0000ee;
     const groundColor = 0x0000ee;
-    const intensity = 3;
+    const intensity = 2;
+
     const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
     light.name = "high-light";
     scene.add(light);
@@ -47,6 +48,15 @@ function main() {
     const intensity = 2.5;
     const light = new THREE.DirectionalLight(color, intensity);
     light.position.set(5, 10, 2);
+    scene.add(light);
+    scene.add(light.target);
+  }
+
+  {
+    const color = 0xffffff;
+    const intensity = 2.5;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-5, -10, -2);
     scene.add(light);
     scene.add(light.target);
   }
@@ -78,6 +88,7 @@ function main() {
     const gltfLoader = new GLTFLoader();
     gltfLoader.load("/scene.gltf", (gltf) => {
       const root = gltf.scene;
+
       root.name = "AVP";
 
       scene.add(root);
@@ -93,6 +104,13 @@ function main() {
       // Capture the center point of the 3D model for our custom rotation center
       targetPoint.copy(boxCenter);
     });
+  }
+
+  {
+    const filterMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+    });
+    scene.overrideMaterial = filterMaterial;
   }
 
   function resizeRendererToDisplaySize(renderer) {
@@ -124,7 +142,7 @@ function main() {
     // 1. Advance the angle over time
     let rotationSpeed = parseFloat(
       window
-        .getComputedStyle(document.querySelector("#c"))
+        .getComputedStyle(document.querySelector(querySelector))
         .getPropertyValue("--rotationSpeed") || 0.01,
     );
     //
@@ -146,31 +164,15 @@ function main() {
     scene.getObjectByName("normal-light").intensity =
       parseFloat(
         window
-          .getComputedStyle(document.querySelector("#c"))
+          .getComputedStyle(document.querySelector(querySelector))
           .getPropertyValue("--transparency1") || 1,
       ) * 2;
     scene.getObjectByName("high-light").intensity =
       parseFloat(
         window
-          .getComputedStyle(document.querySelector("#c"))
+          .getComputedStyle(document.querySelector(querySelector))
           .getPropertyValue("--transparency2") || 0,
       ) * 3;
-
-    const avp = scene.getObjectByName("AVP");
-    if (avp) {
-      if (
-        window
-          .getComputedStyle(document.querySelector("#c"))
-          .getPropertyValue("--transparency1") < 1
-      ) {
-        const filterMaterial = new THREE.MeshStandardMaterial({
-          color: 0xffffff,
-        });
-        scene.overrideMaterial = filterMaterial;
-      } else {
-        scene.overrideMaterial = null;
-      }
-    }
 
     requestAnimationFrame(render);
   }
@@ -178,4 +180,5 @@ function main() {
   requestAnimationFrame(render);
 }
 
-main();
+main("#c");
+main("#c1");
